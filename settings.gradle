@@ -1,0 +1,3 @@
+rootProject.name = "flow_event_bus"
+include ':app'
+include ':core'
