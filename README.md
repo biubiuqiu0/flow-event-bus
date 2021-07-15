@@ -107,10 +107,10 @@ viewModelScope.launch {
     flow.emit(value)
 }
 ```
-- 有序分发
+- 有序分发  
 `Flow`本质类似阻塞队列,是有序的。
 
-- 全局单例
+- 全局单例  
 使用全局`ViewModel`，因为有`ViewModelScope` 避免使用`GlobalScope`:
 ```kotlin
 object ApplicationScopeViewModelProvider : ViewModelStoreOwner {
