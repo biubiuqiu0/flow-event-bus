@@ -6,11 +6,11 @@
 # 常用消息总线对比
 
 消息总线 | 延迟发送 | 有序接收消息 | Sticky | 生命周期感知 | 跨进程/APP | 线程分发
----|---|---|---|---|---|---`
+---|---|---|---|---|---|---
 EventBus | ❌ | ✅ | ✅ | ❌ | ❌ | ✅
-RxBus | ❌ | ❌ | ✅ | ❌ | ❌ | ✅
+RxBus | ❌ | ✅ | ✅ | ❌ | ❌ | ✅
 LiveEventBus | ✅ | ✅ | ✅ | ✅ | ✅ | ❌
-FlowEventBus| ✅ | ✅ | ✅ | ✅ | ✅ | ❌
+FlowEventBus| ✅ | ✅ | ✅ | ✅ |❌| ✅ | 
 
 
 # 设计构思
@@ -107,11 +107,12 @@ viewModelScope.launch {
     flow.emit(value)
 }
 ```
-- 有序分发
-`Flow`本质类似阻塞队列,是有序的。
+- 有序分发  
+`SharedFlow`本质类似阻塞队列,是有序的。
 
-- 全局单例
-使用全局`ViewModel`，因为有`ViewModelScope` 避免使用`GlobalScope`:
+- 全局单例  
+使用全局`ViewModel`，主要是因为有`ViewModelScope`，可以避免使用`GlobalScope`，如果想要单页面内部组件通信，那就使用ActivityScope的ViewModel就行啦：
+
 ```kotlin
 object ApplicationScopeViewModelProvider : ViewModelStoreOwner {
 
@@ -131,6 +132,19 @@ object ApplicationScopeViewModelProvider : ViewModelStoreOwner {
     fun <T : ViewModel> getApplicationScopeViewModel(modelClass: Class<T>): T {
         return mApplicationProvider[modelClass]
     }
+}
+```
+  
+  ViewModel内部就一个`map`和注册，发送方法，非常简单：
+
+```kotlin
+
+internal class EventBusViewModel : ViewModel() {
+
+    private val eventFlows: HashMap<String, MutableSharedFlow<Any>> = HashMap()
+   
+    ...
+
 }
 ```
 # 总结
