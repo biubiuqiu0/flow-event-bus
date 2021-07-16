@@ -170,6 +170,19 @@ dependencies {
 	}
 ```
 
+  
+  Step 3. Init
+  
+```kotlin
+class MyApplication: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        EventBusInitializer.init(this)
+    }
+}
+```
+
+
 ### License
 ```
 MIT License
