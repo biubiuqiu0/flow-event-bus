@@ -108,7 +108,7 @@ viewModelScope.launch {
 }
 ```
 - 有序分发  
-`Flow`本质类似阻塞队列,是有序的。
+`SharedFlow`本质类似阻塞队列,是有序的。
 
 - 全局单例  
 使用全局`ViewModel`，主要是因为有`ViewModelScope`，可以避免使用`GlobalScope`，如果想要单页面内部组件通信，那就使用ActivityScope的ViewModel就行啦：
