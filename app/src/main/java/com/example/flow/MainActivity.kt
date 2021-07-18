@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Lifecycle
-import com.example.flow.databinding.ActivityMainBinding
 import com.biubiu.eventbus.observe.observeEvent
-import com.biubiu.eventbus.post.postStickyEvent
-import com.example.flow.event.CustomEvent
+import com.example.flow.databinding.ActivityMainBinding
+import com.biubiu.eventbus.observe.observeGlobalEvent
+import com.biubiu.eventbus.post.*
+import com.example.flow.event.ActivityEvent
+import com.example.flow.event.GlobalEvent
 import kotlinx.coroutines.Dispatchers
 
 class MainActivity : AppCompatActivity() {
@@ -26,60 +28,77 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(root.root)
 
-        root.stickyBtn.setOnClickListener {
-            postStickyEvent(STICKY, "☝ 粘性事件️")
+        observeGlobalEvents()
+        observeActivityScopeEvents()
+
+        supportFragmentManager.beginTransaction().replace(R.id.frame, TestFragment())
+            .commitAllowingStateLoss()
+
+        root.localStickyBtn.setOnClickListener {
+            postEvent(STICKY, "☝ 本地粘性事件️")
+            postDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
+            postEvent(GlobalEvent("全局粘性事件️"))
+            postDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
+
+            postStickyEvent(STICKY, "☝ 本地粘性事件️")
+            postStickyDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
+            postStickyEvent(GlobalEvent("全局粘性事件️"))
+            postStickyDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
+        }
+
+        root.globalStickyBtn.setOnClickListener {
+            postGlobalStickyEvent(STICKY, "☝ 全局粘性事件️")
+            postGlobalStickyDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
+            postGlobalStickyEvent(GlobalEvent("全局粘性事件️"))
+            postGlobalStickyDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
         }
 
         root.openSec.setOnClickListener {
             startActivity(Intent(this, SecActivity::class.java))
         }
-        //简单事件
-        observeEvent<Int>(CHECK_EVENT) { value ->
-            Log.d(TAG, "received :$value")
-        }
 
-        observeEvent<Int>(CHECK_EVENT, Lifecycle.State.DESTROYED, Dispatchers.IO) { value ->
-            Log.d(TAG, "received  pause & io:$value")
-        }
-        //简单事件
-        observeEvent<String>(NORMAL_EVENT) { value ->
-            Log.d(TAG, "received :$value")
-        }
-
-        //指定最小生命周期
-        observeEvent<String>(NORMAL_EVENT, Lifecycle.State.DESTROYED) { value ->
-            Log.d(TAG, "received :$value > DESTROYED")
-        }
-
-        //切换线程接收 简单事件
-        observeEvent<String>(NORMAL_EVENT, Dispatchers.IO) { value ->
-            Log.d(TAG, "received :$value " + Thread.currentThread().name)
-        }
-
-        //切换线程 + 生命周期
-        observeEvent<String>(NORMAL_EVENT, Lifecycle.State.DESTROYED, Dispatchers.IO) { value ->
-            Log.d(TAG, "received :$value" + "  生命周期 > DESTROYED  " + Thread.currentThread().name)
-        }
-
-        //自定义事件
-        observeEvent<CustomEvent> {
-            Log.d(TAG, "received custom event:${it.name}")
-        }
-
-        //自定义事件 指定最小生命周期
-        observeEvent<CustomEvent>(Lifecycle.State.DESTROYED) {
-            Log.d(TAG, "received custom event:${it.name}   >  DESTROYED")
-        }
-
-        //自定义事件 切换线程
-        observeEvent<CustomEvent>(Dispatchers.IO) {
-            Log.d(TAG, "received custom event:${it.name}"+ Thread.currentThread().name)
-        }
-
-        //自定义事件 切换线程 + 指定最小生命周期
-        observeEvent<CustomEvent>(Lifecycle.State.DESTROYED, Dispatchers.IO) {
-            Log.d(TAG, "received custom event:${it.name} >  DESTROYED"+ Thread.currentThread().name)
+        root.sendEvent.setOnClickListener {
+            postEvent(ActivityEvent("Main Activity"))
         }
 
     }
+
+    //跨页面
+    private fun observeGlobalEvents() {
+        //全局事件
+        observeGlobalEvent<GlobalEvent> { value ->
+            Log.d(TAG, "MainActivity received GlobalEvent  :${value.name}")
+        }
+
+    }
+
+
+    //本页面
+    private fun observeActivityScopeEvents() {
+        //Activity 级别的 事件
+        //自定义事件
+        observeEvent<ActivityEvent> {
+            Log.d(TAG, "MainActivity received ActivityEvent: ${it.name}")
+        }
+
+//        //自定义事件 指定最小生命周期
+//        observeEvent<ActivityEvent>(Lifecycle.State.DESTROYED) {
+//            Log.d(TAG, "received ActivityEvent:${it.name}   >  DESTROYED")
+//        }
+
+        //自定义事件 切换线程
+//        observeEvent<ActivityEvent>(Dispatchers.IO) {
+//            Log.d(TAG, "received ActivityEvent:${it.name} " + Thread.currentThread().name)
+//        }
+
+        //自定义事件 切换线程 + 指定最小生命周期
+//        observeEvent<ActivityEvent>(Lifecycle.State.DESTROYED, Dispatchers.IO) {
+//            Log.d(
+//                TAG,
+//                "received ActivityEvent:${it.name} >  DESTROYED    " + Thread.currentThread().name
+//            )
+//        }
+
+    }
+
 }

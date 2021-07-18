@@ -4,17 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/sticky_btn"
+        android:id="@+id/global_sticky_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送粘性事件" />
+        android:text="发送全局粘性事件" />
+
+    <Button
+        android:id="@+id/local_sticky_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="发送本页面粘性事件" />
 
     <Button
         android:id="@+id/open_sec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="跳转下个页面" />
+
+    <Button
+        android:id="@+id/send_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="发送ActivityEvent" />
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"/>
 </LinearLayout>
