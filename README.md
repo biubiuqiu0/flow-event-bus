@@ -30,6 +30,8 @@ FlowEventBus| ✅ | ✅ | ✅ | ✅ |❌| ✅ |
 # 依赖库版本
 关键在于 `kotlinx-coroutines > 1.4.x`  和 `lifecycle-runtime-ktx > 2.3.x`
 # API
+
+> 以下示例中的XEvent均是随意定义的类，只是测试时为了区分事件而定义的名字
 ## 事件发送
 
 ```kotlin
@@ -177,14 +179,10 @@ internal class EventBusViewModel : ViewModel() {
 }
 ```
 # 总结
+
 站在巨人的肩膀上的同时也可以简单了解下原理。不过挺复杂的，需要下点功夫😄  
 
 [kotlinx.coroutines.flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/index.html)
-
-
-
-
-
 
 
 # 使用
