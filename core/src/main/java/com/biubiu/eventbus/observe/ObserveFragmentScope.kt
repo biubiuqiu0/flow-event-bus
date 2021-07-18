@@ -2,8 +2,10 @@ package com.biubiu.eventbus.observe
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.biubiu.eventbus.core.EventBusCore
+import com.biubiu.eventbus.store.ApplicationScopeViewModelProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -12,37 +14,35 @@ import kotlinx.coroutines.Dispatchers
 //_______________________________________
 
 inline fun <reified T> Fragment.observeEvent(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
 ) {
-    this.observeEvent(Lifecycle.State.STARTED, onReceived)
+    this.observeEvent(
+        T::class.java.name,
+        dispatcher,
+        minActiveState,
+        isSticky,
+        onReceived
+    )
 }
 
-inline fun <reified T> Fragment.observeEvent(
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeEvent(Lifecycle.State.STARTED, dispatcher, onReceived)
-}
 
-inline fun <reified T> Fragment.observeEvent(
-    minActiveState: Lifecycle.State,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeEvent(minActiveState, Dispatchers.Main, onReceived)
-}
-
-inline fun <reified T> Fragment.observeEvent(
-    minActiveState: Lifecycle.State,
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
+fun <T> Fragment.observeEvent(
+    eventName: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
+    onReceived: (T) -> Unit
 ) {
     ViewModelProvider(this).get(EventBusCore::class.java)
         .observeEvent(
-            T::class.java.name,
             this,
+            eventName,
             minActiveState,
             dispatcher,
+            isSticky,
             onReceived
         )
 }
-

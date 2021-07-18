@@ -11,13 +11,13 @@
         android:id="@+id/global_sticky_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送全局粘性事件" />
+        android:text="发送事件" />
 
     <Button
         android:id="@+id/local_sticky_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送本页面粘性事件" />
+        android:text="以粘性方式监听" />
 
     <Button
         android:id="@+id/open_sec"

@@ -35,22 +35,13 @@ class MainActivity : AppCompatActivity() {
             .commitAllowingStateLoss()
 
         root.localStickyBtn.setOnClickListener {
-            postEvent(STICKY, "☝ 本地粘性事件️")
-            postDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
-            postEvent(GlobalEvent("全局粘性事件️"))
-            postDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
-
-            postStickyEvent(STICKY, "☝ 本地粘性事件️")
-            postStickyDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
-            postStickyEvent(GlobalEvent("全局粘性事件️"))
-            postStickyDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
+            observeEvent<ActivityEvent>(isSticky = true) {
+                Log.d(TAG, "MainActivity received ActivityEvent isSticky :${it.name}")
+            }
         }
 
         root.globalStickyBtn.setOnClickListener {
-            postGlobalStickyEvent(STICKY, "☝ 全局粘性事件️")
-            postGlobalStickyDelayEvent(STICKY, "☝ 全局粘性事件️", 1000)
-            postGlobalStickyEvent(GlobalEvent("全局粘性事件️"))
-            postGlobalStickyDelayEvent(GlobalEvent("全局粘性事件️"), 1000)
+            postEvent(ActivityEvent("Main Activity Sticky"))
         }
 
         root.openSec.setOnClickListener {
@@ -69,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         observeGlobalEvent<GlobalEvent> { value ->
             Log.d(TAG, "MainActivity received GlobalEvent  :${value.name}")
         }
-
     }
 
 
@@ -77,22 +67,22 @@ class MainActivity : AppCompatActivity() {
     private fun observeActivityScopeEvents() {
         //Activity 级别的 事件
         //自定义事件
-        observeEvent<ActivityEvent> {
-            Log.d(TAG, "MainActivity received ActivityEvent: ${it.name}")
-        }
-
-//        //自定义事件 指定最小生命周期
-//        observeEvent<ActivityEvent>(Lifecycle.State.DESTROYED) {
-//            Log.d(TAG, "received ActivityEvent:${it.name}   >  DESTROYED")
+//        observeEvent<ActivityEvent> {
+//            Log.d(TAG, "MainActivity received ActivityEvent: ${it.name}")
 //        }
 
-        //自定义事件 切换线程
+//        //自定义事件 切换线程
 //        observeEvent<ActivityEvent>(Dispatchers.IO) {
 //            Log.d(TAG, "received ActivityEvent:${it.name} " + Thread.currentThread().name)
 //        }
-
-        //自定义事件 切换线程 + 指定最小生命周期
-//        observeEvent<ActivityEvent>(Lifecycle.State.DESTROYED, Dispatchers.IO) {
+//
+//        //自定义事件 指定最小生命周期
+//        observeEvent<ActivityEvent>(minActiveState = Lifecycle.State.DESTROYED) {
+//            Log.d(TAG, "received ActivityEvent:${it.name}   >  DESTROYED")
+//        }
+//
+//        //自定义事件 切换线程 + 指定最小生命周期
+//        observeEvent<ActivityEvent>(Dispatchers.IO, Lifecycle.State.DESTROYED) {
 //            Log.d(
 //                TAG,
 //                "received ActivityEvent:${it.name} >  DESTROYED    " + Thread.currentThread().name

@@ -34,49 +34,17 @@ class EventBusCore : ViewModel() {
     }
 
     fun <T : Any> observeEvent(
-        eventName: String,
         lifecycleOwner: LifecycleOwner,
+        eventName: String,
         minState: Lifecycle.State,
         dispatcher: CoroutineDispatcher,
+        isSticky: Boolean,
         onReceived: (T) -> Unit
     ) {
         EventBusInitializer.logger?.log(Level.WARNING, "observe Event:$eventName")
-        collectEventFlow(
-            lifecycleOwner,
-            minState,
-            dispatcher,
-            getEventFlow(eventName, false),
-            onReceived
-        )
-    }
-
-    fun <T : Any> observeStickEvent(
-        eventName: String,
-        lifecycleOwner: LifecycleOwner,
-        minState: Lifecycle.State,
-        dispatcher: CoroutineDispatcher,
-        onReceived: (T) -> Unit
-    ) {
-        EventBusInitializer.logger?.log(Level.WARNING, "observe Event:$eventName")
-        collectEventFlow(
-            lifecycleOwner,
-            minState,
-            dispatcher,
-            getEventFlow(eventName, true),
-            onReceived
-        )
-    }
-
-    private fun <T> collectEventFlow(
-        lifecycleOwner: LifecycleOwner,
-        minState: Lifecycle.State,
-        dispatcher: CoroutineDispatcher = Dispatchers.Main,
-        flow: MutableSharedFlow<Any>,
-        onReceived: (T) -> Unit
-    ) {
         lifecycleOwner.launchWhenStateAtLeast(minState) {
-            flow.collect { value ->
-                this.launch(dispatcher ?: EmptyCoroutineContext) {
+            getEventFlow(eventName, isSticky).collect { value ->
+                this.launch(dispatcher) {
                     try {
                         onReceived.invoke(value as T)
                     } catch (e: ClassCastException) {
@@ -100,8 +68,10 @@ class EventBusCore : ViewModel() {
 
     fun postEvent(eventName: String, value: Any, timeMillis: Long) {
         EventBusInitializer.logger?.log(Level.WARNING, "post Event:$eventName")
-
-        getEventFlow(eventName, false).let { flow ->
+        listOfNotNull(
+            getEventFlow(eventName, false),
+            getEventFlow(eventName, true)
+        ).forEach { flow ->
             viewModelScope.launch {
                 delay(timeMillis)
                 flow.emit(value)
@@ -109,14 +79,8 @@ class EventBusCore : ViewModel() {
         }
     }
 
-    fun postStickyEvent(eventName: String, value: Any, timeMillis: Long) {
-        EventBusInitializer.logger?.log(Level.WARNING, "post Event:$eventName  isSticky")
-
-        getEventFlow(eventName, true).let { flow ->
-            viewModelScope.launch {
-                delay(timeMillis)
-                flow.emit(value)
-            }
-        }
+    @ExperimentalCoroutinesApi
+    fun removeStickEvent(eventName: String) {
+        stickyEventFlows[eventName]?.resetReplayCache()
     }
 }

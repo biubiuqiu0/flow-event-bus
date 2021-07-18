@@ -26,27 +26,6 @@ inline fun <reified T> ViewModelStoreOwner.postEvent(event: T) {
 inline fun <reified T> ViewModelStoreOwner.postDelayEvent(event: T, timeMillis: Long) {
     postDelayEvent(T::class.java.name, event!!, timeMillis)
 }
-//_______________________________________
-//          post sticky event
-//_______________________________________
-
-fun ViewModelStoreOwner.postStickyDelayEvent(eventName: String, value: Any, timeMillis: Long) {
-    ViewModelProvider(this).get(EventBusCore::class.java)
-        .postStickyEvent(eventName, value, timeMillis)
-}
-
-fun ViewModelStoreOwner.postStickyEvent(eventName: String, value: Any) {
-    postStickyDelayEvent(eventName, value, 0L)
-}
-
-inline fun <reified T> ViewModelStoreOwner.postStickyDelayEvent(event: T, timeMillis: Long) {
-    postStickyDelayEvent(T::class.java.name, event!!, timeMillis)
-}
-
-
-inline fun <reified T> ViewModelStoreOwner.postStickyEvent(event: T) {
-    postStickyDelayEvent(T::class.java.name, event!!, 0L)
-}
 
 
 //_______________________________________
@@ -67,25 +46,4 @@ inline fun <reified T> Fragment.postActivityEvent(event: T) {
 
 inline fun <reified T> Fragment.postActivityDelayEvent(event: T, timeMillis: Long) {
     postActivityDelayEvent(T::class.java.name, event!!, timeMillis)
-}
-//_______________________________________
-//          post sticky event
-//_______________________________________
-
-fun Fragment.postActivityStickyEvent(eventName: String, value: Any, timeMillis: Long) {
-    ViewModelProvider(this).get(EventBusCore::class.java)
-        .postStickyEvent(eventName, value, timeMillis)
-}
-
-fun Fragment.postActivityStickyEvent(eventName: String, value: Any) {
-    postActivityStickyEvent(eventName, value, 0L)
-}
-
-inline fun <reified T> Fragment.postActivityStickyDelayEvent(event: T, timeMillis: Long) {
-    postActivityStickyEvent(T::class.java.name, event!!, timeMillis)
-}
-
-
-inline fun <reified T> Fragment.postActivityStickyEvent(event: T) {
-    postActivityStickyDelayEvent(event, 0L)
 }

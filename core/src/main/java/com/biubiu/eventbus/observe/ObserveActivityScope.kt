@@ -8,85 +8,78 @@ import com.biubiu.eventbus.core.EventBusCore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-
 //_______________________________________
 //          Activity scope event observe
 //_______________________________________
 
-
 inline fun <reified T> ComponentActivity.observeEvent(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
 ) {
-    this.observeEvent(Lifecycle.State.STARTED, onReceived)
+    observeEvent(
+        T::class.java.name,
+        dispatcher,
+        minActiveState,
+        isSticky,
+        onReceived
+    )
 }
 
-inline fun <reified T> ComponentActivity.observeEvent(
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeEvent(Lifecycle.State.STARTED, dispatcher, onReceived)
-}
 
-inline fun <reified T> ComponentActivity.observeEvent(
-    minActiveState: Lifecycle.State,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeEvent(minActiveState, Dispatchers.Main, onReceived)
-}
-
-inline fun <reified T> ComponentActivity.observeEvent(
-    minActiveState: Lifecycle.State,
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
+fun <T> ComponentActivity.observeEvent(
+    eventName: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
+    onReceived: (T) -> Unit
 ) {
     ViewModelProvider(this).get(EventBusCore::class.java)
         .observeEvent(
-            T::class.java.name,
             this,
+            eventName,
             minActiveState,
             dispatcher,
+            isSticky,
             onReceived
         )
 }
 
 
-
 //_______________________________________
 //          fragment observe Activity scope event
 //_______________________________________
-
-
 inline fun <reified T> Fragment.observeActivityEvent(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
 ) {
-    this.observeActivityEvent(Lifecycle.State.STARTED, onReceived)
+    observeActivityEvent(
+        T::class.java.name,
+        dispatcher,
+        minActiveState,
+        isSticky,
+        onReceived
+    )
 }
 
-inline fun <reified T> Fragment.observeActivityEvent(
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeActivityEvent(Lifecycle.State.STARTED, dispatcher, onReceived)
-}
 
-inline fun <reified T> Fragment.observeActivityEvent(
-    minActiveState: Lifecycle.State,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeActivityEvent(minActiveState, Dispatchers.Main, onReceived)
-}
-
-inline fun <reified T> Fragment.observeActivityEvent(
-    minActiveState: Lifecycle.State,
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
+fun <T> Fragment.observeActivityEvent(
+    eventName: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
+    onReceived: (T) -> Unit
 ) {
     ViewModelProvider(requireActivity()).get(EventBusCore::class.java)
         .observeEvent(
-            T::class.java.name,
             this,
+            eventName,
             minActiveState,
             dispatcher,
+            isSticky,
             onReceived
         )
 }

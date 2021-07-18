@@ -12,33 +12,13 @@ import kotlinx.coroutines.Dispatchers
 //_______________________________________
 
 inline fun <reified T> LifecycleOwner.observeGlobalEvent(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
 ) {
-    this.observeGlobalEvent(T::class.java.name, Lifecycle.State.STARTED, onReceived)
+    this.observeGlobalEvent(T::class.java.name, dispatcher, minActiveState, isSticky, onReceived)
 }
-
-inline fun <reified T> LifecycleOwner.observeGlobalEvent(
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(T::class.java.name, Lifecycle.State.STARTED, dispatcher, onReceived)
-}
-
-inline fun <reified T> LifecycleOwner.observeGlobalEvent(
-    minActiveState: Lifecycle.State,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(T::class.java.name, minActiveState, onReceived)
-}
-
-inline fun <reified T> LifecycleOwner.observeGlobalEvent(
-    minActiveState: Lifecycle.State,
-    dispatcher: CoroutineDispatcher,
-    noinline onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(T::class.java.name, minActiveState, dispatcher, onReceived)
-}
-
 
 
 //_______________________________________
@@ -47,39 +27,18 @@ inline fun <reified T> LifecycleOwner.observeGlobalEvent(
 
 fun <T> LifecycleOwner.observeGlobalEvent(
     eventName: String,
-    onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(eventName, Lifecycle.State.STARTED, onReceived)
-}
-
-fun <T> LifecycleOwner.observeGlobalEvent(
-    eventName: String,
-    minActiveState: Lifecycle.State,
-    onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(eventName, minActiveState, Dispatchers.Main, onReceived)
-}
-
-fun <T> LifecycleOwner.observeGlobalEvent(
-    eventName: String,
-    dispatcher: CoroutineDispatcher,
-    onReceived: (T) -> Unit
-) {
-    this.observeGlobalEvent(eventName, Lifecycle.State.STARTED, dispatcher, onReceived)
-}
-
-fun <T> LifecycleOwner.observeGlobalEvent(
-    eventName: String,
-    minActiveState: Lifecycle.State,
-    dispatcher: CoroutineDispatcher= Dispatchers.Main,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    isSticky: Boolean = false,
     onReceived: (T) -> Unit
 ) {
     ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
         .observeEvent(
-            eventName,
             this,
+            eventName,
             minActiveState,
             dispatcher,
+            isSticky,
             onReceived
         )
 }
