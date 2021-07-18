@@ -153,6 +153,36 @@ internal class EventBusViewModel : ViewModel() {
 [kotlinx.coroutines.flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/index.html)
 
 
+# 使用
+Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+Step 2. Add the dependency
+```
+dependencies {
+	        implementation 'com.github.biubiuqiu0:flow-event-bus:0.0.1'
+	}
+```
+
+  
+  Step 3. Init
+  
+```kotlin
+class MyApplication: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        EventBusInitializer.init(this)
+    }
+}
+```
+
+
 ### License
 ```
 MIT License
