@@ -23,51 +23,79 @@ FlowEventBus| ✅ | ✅ | ✅ | ✅ |❌| ✅ |
 -  无观察者自动清除事件不会造成积压
 
 
-结合 Lifecycle 感知生命周期，做到响应时机可控
+结合 Lifecycle 感知生命周期，做到响应时机可控 。
+
+不仅可以全局范围的事件，也可以单页面内的通信而不透传到别的页面，如：Activity内部，Fragment内部通信。
 
 # 依赖库版本
 关键在于 `kotlinx-coroutines > 1.4.x`  和 `lifecycle-runtime-ktx > 2.3.x`
 # API
-一般注册与发送
-- 简单的事件接收注册
+## 事件发送
+
 ```kotlin
-observeEvent<String>(eventName="SimpleEvent") { value ->
-   ...
-}
+//全局范围
+postEvent(AppScopeEvent("form TestFragment"))
+
+//Fragment 内部范围 
+postEvent(fragment,FragmentEvent("form TestFragment"))
+
+//Activity 内部范围
+postEvent(requireActivity(),ActivityEvent("form TestFragment"))
 ```
-- 简单的事件发送
+
+## 事件监听
+
 ```kotlin
-postEvent(eventName="SimpleEvent",eventValue="Let's do it")
-```
-- 自定义事件发送
-```kotlin
-postEvent(CustomEvent(value = "Hello Word"))
-```
-- 自定义事件接收注册
-```kotlin
-observeEvent<CustomEvent> { event ->
-  ...
-}
-```
-- 延迟发送
-```kotlin
-postDelayEvent(CustomEvent(name = "Hello Word"),1000)
-```
-- 发送粘性事件
-```kotlin
-postStickyEvent(eventName = STICKY,value = "☝ 粘性事件️")
-```
-- 指定最小感知生命周期(默认 Lifecycle.State.Started)
-```kotlin
-observeEvent<String>("SimpleEvent",Lifecycle.State.DESTROYED) { value ->
-   ...
-}
-```
-- 切换接收线程
-```kotlin
-observeEvent<String>("SimpleEvent",Dispatchers.IO) { value ->
+//接收 Activity Scope事件
+observeEvent<ActivityEvent>(scope = requireActivity()) {
     ...
 }
+
+//接收 Fragment Scope事件
+observeEvent<FragmentEvent>(scope = fragment) {
+    ...
+}
+
+//接收 App Scope事件
+observeEvent<AppScopeEvent> {
+    ...
+}
+
+```
+## Like ObserveForever：
+```kotlin
+//此时需要指定协程范围
+observeEvent<GlobalEvent>(scope = coroutineScope) {
+       ...
+}
+```
+## 延迟发送
+```kotlin
+postEvent(CustomEvent(value = "Hello Word"),1000)
+```
+## 线程切换
+```kotlin
+observeEvent<ActivityEvent>(Dispatchers.IO) {
+    ...
+}
+```
+## 指定可感知的最小生命状态
+```kotlin
+observeEvent<ActivityEvent>(minActiveState = Lifecycle.State.DESTROYED) {
+   ...
+}
+```
+## 以粘性方式监听
+```kotlin
+observeEvent<GlobalEvent>(isSticky = true) {
+   ...
+}
+```
+## 移除粘性事件
+```kotlin
+    removeStickyEvent(StickyEvent::class.java)
+    removeStickyEvent(fragment,StickyEvent::class.java)
+    removeStickyEvent(activity,StickyEvent::class.java)
 ```
 # 原理
  以上功能依托于Kotlin协程的`SharedFlow`和`Lifecycle` 因此实现起来非常简单。 
@@ -108,10 +136,10 @@ viewModelScope.launch {
 }
 ```
 - 有序分发  
-`SharedFlow`本质类似阻塞队列,是有序的。
+`Flow`本身就是有序的
 
 - 全局单例  
-使用全局`ViewModel`，主要是因为有`ViewModelScope`，可以避免使用`GlobalScope`，如果想要单页面内部组件通信，那就使用ActivityScope的ViewModel就行啦：
+使用全局`ViewModel`，主要是因为有`ViewModelScope`，可以避免使用`GlobalScope`，如果想要单页面内部组件通信，那就使用ActivityScope的ViewModel就行了：
 
 ```kotlin
 object ApplicationScopeViewModelProvider : ViewModelStoreOwner {
@@ -135,7 +163,7 @@ object ApplicationScopeViewModelProvider : ViewModelStoreOwner {
 }
 ```
   
-  ViewModel内部就一个`map`和注册，发送方法，非常简单：
+  ViewModel内部有2个`map`，分别是粘性和非粘性：
 
 ```kotlin
 
@@ -143,6 +171,7 @@ internal class EventBusViewModel : ViewModel() {
 
     private val eventFlows: HashMap<String, MutableSharedFlow<Any>> = HashMap()
    
+    private val stickyEventFlows: HashMap<String, MutableSharedFlow<Any>> = HashMap()
     ...
 
 }
@@ -151,6 +180,11 @@ internal class EventBusViewModel : ViewModel() {
 站在巨人的肩膀上的同时也可以简单了解下原理。不过挺复杂的，需要下点功夫😄  
 
 [kotlinx.coroutines.flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/index.html)
+
+
+
+
+
 
 
 # 使用
@@ -166,7 +200,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-	        implementation 'com.github.biubiuqiu0:flow-event-bus:0.0.1'
+	        implementation 'com.github.biubiuqiu0:flow-event-bus:0.0.2'
 	}
 ```
 

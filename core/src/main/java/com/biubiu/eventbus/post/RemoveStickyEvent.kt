@@ -1,41 +1,25 @@
 package com.biubiu.eventbus.post
 
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import com.biubiu.eventbus.core.EventBusCore
 import com.biubiu.eventbus.store.ApplicationScopeViewModelProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlin.reflect.KClass
 
 
-fun removeGlobalStickyEvent(eventName: String) {
+inline fun <reified T> removeStickyEvent(event: Class<T>) {
     ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
-        .removeStickEvent(eventName)
+        .removeStickEvent(event.name)
 }
 
 
-inline fun <reified T> removeGlobalStickyEvent(event: Class<T>) {
-    removeGlobalStickyEvent(event.name)
+inline fun <reified T> removeStickyEvent(scope: Fragment, event: Class<T>) {
+    ViewModelProvider(scope).get(EventBusCore::class.java)
+        .removeStickEvent(event.name)
 }
 
 
-fun ViewModelStoreOwner.removeStickyEvent(eventName: String) {
-    ViewModelProvider(this).get(EventBusCore::class.java)
-        .removeStickEvent(eventName)
-}
-
-
-inline fun <reified T> ViewModelStoreOwner.removeStickyEvent(event: Class<T>) {
-    removeStickyEvent(event.name)
-}
-
-
-fun Fragment.removeActivityStickyEvent(eventName: String) {
-    ViewModelProvider(requireActivity()).get(EventBusCore::class.java)
-        .removeStickEvent(eventName)
-}
-
-inline fun <reified T> Fragment.removeActivityStickyEvent(event: Class<T>) {
-    removeActivityStickyEvent(event.name)
+inline fun <reified T> removeStickyEvent(scope: ComponentActivity, event: Class<T>) {
+    ViewModelProvider(scope).get(EventBusCore::class.java)
+        .removeStickEvent(event.name)
 }

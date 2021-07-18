@@ -32,6 +32,15 @@
         android:layout_height="wrap_content"
         android:text="发布Application事件"
         />
+
+
+    <Button
+        android:id="@+id/button_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="发布Fragment事件"
+        />
+
     <Button
         android:id="@+id/button_activity"
         android:layout_width="wrap_content"
@@ -40,9 +49,9 @@
         />
 
     <Button
-        android:id="@+id/button_fragment"
+        android:id="@+id/button_component"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发布Fragment事件"
+        android:text="组件发布事件"
         />
 </LinearLayout>
