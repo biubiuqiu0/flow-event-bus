@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.biubiu.eventbus.observe.observeGlobalEvent
-import com.biubiu.eventbus.post.postDelayEvent
-import com.biubiu.eventbus.post.postEvent
-import com.biubiu.eventbus.post.postGlobalDelayEvent
-import com.biubiu.eventbus.post.postGlobalEvent
+import com.biubiu.eventbus.post.*
 import com.example.flow.MainActivity.Companion.NORMAL_EVENT
 import com.example.flow.MainActivity.Companion.TAG
 import com.example.flow.databinding.ActivitySecBinding
@@ -46,5 +43,10 @@ class SecActivity : AppCompatActivity() {
                 postEvent(MainActivity.CHECK_EVENT, index)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeGlobalStickyEvent(ActivityEvent::class.java)
     }
 }

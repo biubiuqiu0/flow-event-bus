@@ -9,10 +9,7 @@ import androidx.lifecycle.Lifecycle
 import com.biubiu.eventbus.observe.observeActivityEvent
 import com.biubiu.eventbus.observe.observeEvent
 import com.biubiu.eventbus.observe.observeGlobalEvent
-import com.biubiu.eventbus.post.postActivityDelayEvent
-import com.biubiu.eventbus.post.postActivityEvent
-import com.biubiu.eventbus.post.postEvent
-import com.biubiu.eventbus.post.postGlobalEvent
+import com.biubiu.eventbus.post.*
 import com.example.flow.event.ActivityEvent
 import com.example.flow.event.FragmentEvent
 import com.example.flow.event.GlobalEvent
@@ -23,18 +20,23 @@ class TestFragment : Fragment(R.layout.fragment_test) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.button_fragment).setOnClickListener {
-            postEvent(FragmentEvent("来自 Fragment"))
-        }
 
         view.findViewById<Button>(R.id.button_app).setOnClickListener {
-            postGlobalEvent(GlobalEvent("来自 Fragment"))
+            observeActivityEvent<ActivityEvent>(isSticky = true) {
+                Log.d(MainActivity.TAG, "TestFragment received FragmentEvent sticky  :${it.name}")
+            }
         }
 
         view.findViewById<Button>(R.id.button_activity).setOnClickListener {
-            postActivityEvent(ActivityEvent("来自 Fragment"))
-            postActivityDelayEvent(ActivityEvent("来自 Fragment"), 1000)
+            removeActivityStickyEvent(ActivityEvent::class.java)
         }
+
+        view.findViewById<Button>(R.id.button_fragment).setOnClickListener {
+            observeActivityEvent<ActivityEvent>(isSticky = true) {
+                Log.d(MainActivity.TAG, "TestFragment received FragmentEvent sticky  :${it.name}")
+            }
+        }
+
 
         //监听全局事件
         observeGlobalEvent<GlobalEvent> {
@@ -60,25 +62,22 @@ class TestFragment : Fragment(R.layout.fragment_test) {
 
 
         //监听Activity事件
-        observeActivityEvent<ActivityEvent> {
-            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 1:${it.name}")
-        }
 
-        observeActivityEvent<ActivityEvent>(isSticky = true) {
-            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 2:${it.name}")
-        }
-
-        observeActivityEvent<ActivityEvent>(minActiveState = Lifecycle.State.STARTED) {
-            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 3:${it.name}")
-        }
-
-        observeActivityEvent<ActivityEvent>(Dispatchers.IO) {
-            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 4:${it.name}")
-        }
-
-        observeActivityEvent<ActivityEvent>(Dispatchers.IO, Lifecycle.State.STARTED) {
-            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 5:${it.name}")
-        }
+//        observeActivityEvent<ActivityEvent>(isSticky = true) {
+//            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 2:${it.name}")
+//        }
+//
+//        observeActivityEvent<ActivityEvent>(minActiveState = Lifecycle.State.STARTED) {
+//            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 3:${it.name}")
+//        }
+//
+//        observeActivityEvent<ActivityEvent>(Dispatchers.IO) {
+//            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 4:${it.name}")
+//        }
+//
+//        observeActivityEvent<ActivityEvent>(Dispatchers.IO, Lifecycle.State.STARTED) {
+//            Log.d(MainActivity.TAG, "TestFragment received FragmentEvent 5:${it.name}")
+//        }
 
         //监听自己Scope事件
         observeEvent<FragmentEvent>(Dispatchers.IO, Lifecycle.State.STARTED) {
@@ -101,5 +100,9 @@ class TestFragment : Fragment(R.layout.fragment_test) {
             Log.d(MainActivity.TAG, "TestFragment received FragmentEvent :${it.name}")
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

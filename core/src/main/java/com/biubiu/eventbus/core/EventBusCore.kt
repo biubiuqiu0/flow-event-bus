@@ -1,12 +1,21 @@
 package com.biubiu.eventbus.core
 
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.biubiu.eventbus.EventBusInitializer
 import com.biubiu.eventbus.util.launchWhenStateAtLeast
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.collections.HashMap
+import kotlin.collections.forEach
+import kotlin.collections.listOfNotNull
+import kotlin.collections.set
 
 class EventBusCore : ViewModel() {
 
@@ -79,8 +88,7 @@ class EventBusCore : ViewModel() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     fun removeStickEvent(eventName: String) {
-        stickyEventFlows[eventName]?.resetReplayCache()
+        stickyEventFlows.remove(eventName)
     }
 }
