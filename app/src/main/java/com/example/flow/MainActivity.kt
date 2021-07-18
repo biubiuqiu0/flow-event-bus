@@ -35,13 +35,11 @@ class MainActivity : AppCompatActivity() {
             .commitAllowingStateLoss()
 
         root.localStickyBtn.setOnClickListener {
-            observeEvent<ActivityEvent>(isSticky = true) {
-                Log.d(TAG, "MainActivity received ActivityEvent isSticky :${it.name}")
-            }
+
         }
 
         root.globalStickyBtn.setOnClickListener {
-            postEvent(ActivityEvent("Main Activity Sticky"))
+            postGlobalEvent(ActivityEvent("Main Activity Sticky"))
         }
 
         root.openSec.setOnClickListener {

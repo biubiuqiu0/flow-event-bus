@@ -22,8 +22,8 @@ class SecActivity : AppCompatActivity() {
         val root = ActivitySecBinding.inflate(layoutInflater)
         setContentView(root.root)
         //粘性事件
-        observeGlobalEvent<String>(MainActivity.STICKY) { value ->
-            Log.d(TAG, "received :接收！ $value")
+        observeGlobalEvent<ActivityEvent>(isSticky = true) {
+            Log.d(TAG, "SecActivity received ActivityEvent isSticky :${it.name}")
         }
 
         root.sendSimpleEvent.setOnClickListener {
