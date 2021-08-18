@@ -6,11 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biubiu.eventbus.EventBusInitializer
 import com.biubiu.eventbus.util.launchWhenStateAtLeast
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.util.logging.Level
 import kotlin.collections.HashMap
 import kotlin.collections.forEach
@@ -89,6 +87,10 @@ class EventBusCore : ViewModel() {
         stickyEventFlows.remove(eventName)
     }
 
+    fun clearStickEvent(eventName: String) {
+        stickyEventFlows[eventName]?.resetReplayCache()
+    }
+
 
     private fun <T : Any> invokeReceived(value: Any, onReceived: (T) -> Unit) {
         try {
@@ -106,6 +108,13 @@ class EventBusCore : ViewModel() {
                 e
             )
         }
+    }
+
+
+    fun getEventObserverCount(eventName: String): Int {
+        val stickyObserverCount = stickyEventFlows[eventName]?.subscriptionCount?.value ?: 0
+        val normalObserverCount = eventFlows[eventName]?.subscriptionCount?.value ?: 0
+        return stickyObserverCount + normalObserverCount
     }
 
 }

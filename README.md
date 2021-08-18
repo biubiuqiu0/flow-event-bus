@@ -93,11 +93,21 @@ observeEvent<GlobalEvent>(isSticky = true) {
    ...
 }
 ```
-## 移除粘性事件
+## 删除粘性事件
+移除粘性事件实例
 ```kotlin
     removeStickyEvent(StickyEvent::class.java)
     removeStickyEvent(fragment,StickyEvent::class.java)
     removeStickyEvent(activity,StickyEvent::class.java)
+```
+## 清除粘性事件
+粘性事件实例还在，但没有了`ReplayCache`,新观察者不会收到回调
+```kotlin
+    clearStickyEvent(GlobalEvent::class.java)
+```
+## 获取事件监听者数量
+```kotlin
+    getEventObserverCount(GlobalEvent::class.java)
 ```
 # 原理
  以上功能依托于Kotlin协程的`SharedFlow`和`Lifecycle` 因此实现起来非常简单。 

@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.biubiu.eventbus.observe.observeEvent
 import com.biubiu.eventbus.post.postEvent
-import com.biubiu.eventbus.post.removeStickyEvent
+import com.biubiu.eventbus.util.clearStickyEvent
+import com.biubiu.eventbus.util.getEventObserverCount
+import com.biubiu.eventbus.util.removeStickyEvent
 import com.example.flow.MainActivity.Companion.TAG
 import com.example.flow.databinding.ActivitySecBinding
 import com.example.flow.event.GlobalEvent

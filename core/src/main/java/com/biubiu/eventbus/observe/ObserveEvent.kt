@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import com.biubiu.eventbus.core.EventBusCore
 import com.biubiu.eventbus.store.ApplicationScopeViewModelProvider
 import kotlinx.coroutines.*
@@ -77,6 +78,22 @@ inline fun <reified T> observeEvent(
 ) {
     coroutineScope.launch {
         ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
+            .observeWithoutLifecycle(
+                T::class.java.name,
+                isSticky,
+                onReceived
+            )
+    }
+}
+
+inline fun <reified T> observeEvent(
+    scope: ViewModelStoreOwner,
+    coroutineScope: CoroutineScope,
+    isSticky: Boolean = false,
+    noinline onReceived: (T) -> Unit
+) {
+    coroutineScope.launch {
+        ViewModelProvider(scope).get(EventBusCore::class.java)
             .observeWithoutLifecycle(
                 T::class.java.name,
                 isSticky,
