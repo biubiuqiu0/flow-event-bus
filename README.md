@@ -132,7 +132,7 @@ fun <T> LifecycleOwner.launchWhenStateAtLeast(
 - 自行取消监听  
   观察事件方法返回一个`Job` 使用方自行可以自行控制是否还继续监听
 ```kotlin
-    val job = obserEvent<Event>{
+    val job = observeEvent<Event>{
         ...
     }
     //取消监听
