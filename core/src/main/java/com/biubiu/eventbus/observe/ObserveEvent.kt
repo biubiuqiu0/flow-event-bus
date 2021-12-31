@@ -20,8 +20,8 @@ inline fun <reified T> LifecycleOwner.observeEvent(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
-) {
-    ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
+): Job {
+    return ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
         .observeEvent(
             this,
             T::class.java.name,
@@ -39,8 +39,8 @@ inline fun <reified T> observeEvent(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
-) {
-    ViewModelProvider(scope).get(EventBusCore::class.java)
+): Job {
+    return ViewModelProvider(scope).get(EventBusCore::class.java)
         .observeEvent(
             scope,
             T::class.java.name,
@@ -58,8 +58,8 @@ inline fun <reified T> observeEvent(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
-) {
-    ViewModelProvider(scope).get(EventBusCore::class.java)
+): Job {
+    return ViewModelProvider(scope).get(EventBusCore::class.java)
         .observeEvent(
             scope,
             T::class.java.name,
@@ -75,8 +75,8 @@ inline fun <reified T> observeEvent(
     coroutineScope: CoroutineScope,
     isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
-) {
-    coroutineScope.launch {
+): Job {
+    return coroutineScope.launch {
         ApplicationScopeViewModelProvider.getApplicationScopeViewModel(EventBusCore::class.java)
             .observeWithoutLifecycle(
                 T::class.java.name,
@@ -91,8 +91,8 @@ inline fun <reified T> observeEvent(
     coroutineScope: CoroutineScope,
     isSticky: Boolean = false,
     noinline onReceived: (T) -> Unit
-) {
-    coroutineScope.launch {
+): Job {
+    return coroutineScope.launch {
         ViewModelProvider(scope).get(EventBusCore::class.java)
             .observeWithoutLifecycle(
                 T::class.java.name,

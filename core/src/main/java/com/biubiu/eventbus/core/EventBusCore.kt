@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biubiu.eventbus.EventBusInitializer
 import com.biubiu.eventbus.util.launchWhenStateAtLeast
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.collections.HashMap
-import kotlin.collections.forEach
-import kotlin.collections.listOfNotNull
 import kotlin.collections.set
 
 class EventBusCore : ViewModel() {
@@ -47,9 +47,9 @@ class EventBusCore : ViewModel() {
         dispatcher: CoroutineDispatcher,
         isSticky: Boolean,
         onReceived: (T) -> Unit
-    ) {
+    ): Job {
         EventBusInitializer.logger?.log(Level.WARNING, "observe Event:$eventName")
-        lifecycleOwner.launchWhenStateAtLeast(minState) {
+        return lifecycleOwner.launchWhenStateAtLeast(minState) {
             getEventFlow(eventName, isSticky).collect { value ->
                 this.launch(dispatcher) {
                     invokeReceived(value, onReceived)

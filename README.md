@@ -123,12 +123,22 @@ MutableSharedFlow<Any>(
 fun <T> LifecycleOwner.launchWhenStateAtLeast(
     minState: Lifecycle.State,
     block: suspend CoroutineScope.() -> T
-) {
+) :Job {
     lifecycleScope.launch {
         lifecycle.whenStateAtLeast(minState, block)
     }
 }
 ```
+- 自行取消监听  
+  观察事件方法返回一个`Job` 使用方自行可以自行控制是否还继续监听
+```kotlin
+    val job = obserEvent<Event>{
+        ...
+    }
+    //取消监听
+    job.cancel()
+```
+
 - 切换线程
 `whenStateAtLeast` 由于执行的`block`默认是在主线程，因此需要手动切换线程：
 ```kotlin

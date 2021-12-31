@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.biubiu.eventbus.core.EventBusCore
 import com.biubiu.eventbus.store.ApplicationScopeViewModelProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 inline fun <reified T> getEventObserverCount(event: Class<T>): Int {
@@ -41,12 +42,11 @@ inline fun <reified T> clearStickyEvent(scope: ViewModelStoreOwner, event: Class
 }
 
 
-
 fun <T> LifecycleOwner.launchWhenStateAtLeast(
     minState: Lifecycle.State,
     block: suspend CoroutineScope.() -> T
-) {
-    lifecycleScope.launch {
+): Job {
+    return lifecycleScope.launch {
         lifecycle.whenStateAtLeast(minState, block)
     }
 }
